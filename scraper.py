@@ -38,7 +38,46 @@ for result in results:
     sales = data[5].getText()
     staff = data[6].getText()
     comments = data[7].getText()
+    
+# Cleaning the data
+''' If we print out the variable company, the text not only contains the name of the company but also a description. If we then print out sales, it contains unwanted characters such as footnote symbols that would be useful to remove.'''
+    # extract description from the name
+    companyname = data[1].find('span', attrs={'class':'company-name'}).getText()    
+    description = company.replace(companyname, '')
+    
+    # remove unwanted characters
+    sales = sales.strip('*').strip('†').replace(',','')
+    
+# Now scrape the url from each table and save it as a variable
 
+    # go to link and extract company website
+    url = data[1].find('a').get('href')
+    page = urllib.request.urlopen(url)
+    # parse the html 
+    soup = BeautifulSoup(page, 'html.parser')
+    # find the last result in the table and get the link
+    try:
+        tableRow = soup.find('table').find_all('tr')[-1]
+        webpage = tableRow.find('a').get('href')
+    except:
+        webpage = None
+        
+        
+ # Add each result to the list row
+     # write each result to rows
+    rows.append([rank, companyname, webpage, description, location, yearend, salesrise, sales, staff, comments])
+print(rows)
+
+
+# Writing to an output file
+# Create csv and write rows to output file
+with open('techtrack100.csv','w', newline='') as f_output:
+    csv_output = csv.writer(f_output)
+    csv_output.writerows(rows)
+    
+    
+    
+-----------------------------------------------------------------------------------------------------------------------------------------
 
 
 
